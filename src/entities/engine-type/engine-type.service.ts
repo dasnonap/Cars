@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EngineType } from './engine-type.entity';
 import { Repository } from 'typeorm';
 import { EngineTypeModel } from 'src/DTO/engineType.model';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class EngineTypeService {
@@ -20,10 +21,18 @@ export class EngineTypeService {
         return this.engineTypeRepo.findOne(id);
     }
 
-    insertOne(type: EngineTypeModel){
-        const row = new EngineType();
+    findWithType(typeName: string): Promise<EngineType>{
+        return this.engineTypeRepo.findOne({where: {type: typeName}});
+    }
 
-        row.type = type.getEngineType();
+    async insertOne(type: EngineTypeModel){
+        const row = new EngineType();
+        
+        row.type = type.engineType;
+        if(await this.checkExists(type.engineType) != 0){
+            throwError(ConflictException);
+        }
+
 
         this.engineTypeRepo.insert(row);
     }
@@ -38,5 +47,9 @@ export class EngineTypeService {
 
     deleteOne(id: number){
         this.engineTypeRepo.delete(id);
+    }
+
+    private checkExists(engine: string){
+        return this.engineTypeRepo.count({where: {type: engine}});
     }
 }

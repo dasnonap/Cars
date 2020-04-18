@@ -2,16 +2,17 @@ export class AdvertismentsModel{
     id: number;
     car: number;
     city: string;
-    creatorID: number;
+    creatorUsername: string;
     creatorPN: string;
     price: number;
     desc: string;
+    photos: string;
 
-    constructor(id: number, car: number, city: string, creator: number, phone: string, price: number, desc: string){
+    constructor(id: number, car: number, city: string, creator: string, phone: string, price: number, desc: string){
         this.id = id;
         this.car = car;
         this.city = city;
-        this.creatorID = creator;
+        this.creatorUsername = creator;
         this.creatorPN = phone;
         this.price = price;
         this.desc = desc;
@@ -26,8 +27,8 @@ export class AdvertismentsModel{
     getCity(): string{
         return this.city;
     }
-    getCreatorID(): number{
-        return this.creatorID;
+    getCreatorID(): string{
+        return this.creatorUsername;
     }
     getCreatorPhone(): string{
         return this.creatorPN;

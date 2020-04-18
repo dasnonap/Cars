@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, ConflictException } from '@nestjs/common';
 import { ManufacturerService } from './manufacturer.service';
 import { Manufacturer } from './manufacturer.entity';
 import { ManufacturerModel } from 'src/DTO/manufacturer.model';
@@ -8,12 +8,18 @@ export class ManufacturerController {
     constructor(protected readonly manuService: ManufacturerService){}
 
     @Get()
-    findAll(): Promise<Manufacturer[]>{
+    async findAll(){
         return this.manuService.findAll();
     }
 
     @Post()
     insert(@Body('name') name: string){
-        this.manuService.insertOne(new ManufacturerModel(0, name));
+        try{
+            this.manuService.insertOne(new ManufacturerModel(0, name));
+        }
+        catch(err){
+            return "Already exists";
+        }
+        
     }
 }

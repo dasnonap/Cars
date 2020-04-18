@@ -8,12 +8,18 @@ export class ModelsController {
     constructor( protected readonly modelsService: ModelsService){}
 
     @Get()
-    findAll(): Promise<Models>{
-        return this.findAll();
+    async findAll(): Promise<Models[]>{
+        return this.modelsService.findAll();       
     }
 
     @Post()
-    insertModel(@Body('model') model: string, @Body('manName') man: string){
-        this.modelsService.insertOne(new ModelsModel(0, model, man))
+    insertModel(@Body() model: ModelsModel){
+        try{
+            this.modelsService.insertOne(model);
+        }
+        catch(err){
+            return "Already exists";
+        }
+        
     }
 }

@@ -6,7 +6,7 @@ import { Manufacturer } from './manufacturer.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature( [Manufacturer] )],
-  providers: [ManufacturerService],
+  providers: [ManufacturerService, ],
   controllers: [ManufacturerController]
 })
 export class ManufacturerModule {}

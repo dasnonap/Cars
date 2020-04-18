@@ -19,11 +19,18 @@ import { Users } from './entities/users/users.entity';
 import { Wheeldrive } from './entities/wheeldrive/wheeldrive.entity';
 import { Liked_ads } from './entities/liked-ads/liked-ads.entity';
 import { ModelsModule } from './entities/models/models.module';
+import { UploadsModule } from './upload/uploads/uploads.module';
+import { AccountServiceModule } from './account-service/account-service.module';
+import { CarsModule } from './entities/cars/cars.module';
 
 
 @Module({
   imports: [
     CitiesModule,
+    ManufacturerModule,
+    AdvertismentsModule, 
+    ModelsModule, 
+    CarsModule,  
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -37,9 +44,9 @@ import { ModelsModule } from './entities/models/models.module';
                   Type_of_car, EngineType, Models, Transmission_Type,
                   Users, Wheeldrive, Liked_ads ]
     }),
-    ManufacturerModule,
-    AdvertismentsModule, 
-    ModelsModule,   
+    UploadsModule,
+    AccountServiceModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Manufacturer } from './manufacturer.entity';
 import { Repository } from 'typeorm';
@@ -9,20 +9,28 @@ export class ManufacturerService {
 
     constructor(
         @InjectRepository(Manufacturer)
-        protected manRepo: Repository<Manufacturer>
+        private manRepo: Repository<Manufacturer>
     ){}
     async findAll(): Promise<Manufacturer[]>{
         return this.manRepo.find();
     }
 
-    findOne(id: number): Promise<Manufacturer>{
+    async findOne(id: number): Promise<Manufacturer>{
         return this.manRepo.findOne(id);
     }
 
-    insertOne(man: ManufacturerModel){
+    async findWithName(man: string): Promise<Manufacturer>{
+        return this.manRepo.findOne({where: {name: man}});
+    }
+
+    async insertOne(mann: ManufacturerModel){
         const row = new Manufacturer();
 
-        row.name = man.getMan();
+        row.name = mann.man;
+
+        if (await this.checkExists(mann.man) != 0){
+            throw ConflictException;
+        }
 
         this.manRepo.insert(row);
     }
@@ -30,7 +38,7 @@ export class ManufacturerService {
     updateOne(man: ManufacturerModel){
         const row = new Manufacturer();
 
-        row.name = man.getMan();
+        row.name = man.man;
 
         this.manRepo.update(man.getID(), row);
     }
@@ -39,11 +47,10 @@ export class ManufacturerService {
         this.manRepo.delete(id);
     }
 
-    getArray(manName: string){
-        
-        const row = new Manufacturer();
-        row.name = manName;
-        return this.manRepo.getId(row);
-    }
+   private async checkExists(manName: string): Promise<number>{
+        return this.manRepo.count({where: {name: manName}});
+   }
+
+
 
 }

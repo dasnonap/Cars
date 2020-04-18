@@ -17,14 +17,18 @@ export class CitiesService {
         return this.citiesRepo.find();
     }
 
-    findOne(id: number): Promise<Cities>{
+    async findOne(id: number): Promise<Cities>{
         return this.citiesRepo.findOne(id);
+    }
+
+    async findByName(name: string): Promise<Cities>{
+        return this.citiesRepo.findOne({where: {cityName: name}});
     }
 
 
     insertOne(city: CitiesModel){
         const row = new Cities();
-        row.cityName = city.getCity();
+        row.cityName = city.getCity();//to do 
 
         this.citiesRepo.insert(row);
     }

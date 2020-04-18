@@ -27,6 +27,9 @@ export class Advertisments{
     @Column()
     desc: string;
 
+    @Column()
+    photos: string;
+
     @OneToMany(type => Liked_ads, liked => liked.ad)
     likedAds: Liked_ads[];
 
