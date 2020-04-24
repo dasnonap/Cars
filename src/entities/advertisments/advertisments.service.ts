@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Advertisments } from './advertisments.entity';
-import { Repository } from 'typeorm';
+import { Repository, LessThanOrEqual, MoreThanOrEqual, Like } from 'typeorm';
 import { CarsService } from '../cars/cars.service';
 import { CitiesService } from '../cities/cities.service';
 import { UsersService } from '../users/users.service';
 import { AdvertismentsModel } from 'src/DTO/advertisments.model';
 import * as fs from 'fs-extra';
-import { asap } from 'rxjs/internal/scheduler/asap';
+
+import { Users } from '../users/users.entity';
+import { Cities } from '../cities/cities.entity';
+import { Cars } from '../cars/cars.entity';
+import { SearchModel } from 'src/DTO/search.model';
+import { EngineType } from '../engine-type/engine-type.entity';
 
 
 @Injectable()
@@ -15,18 +20,30 @@ export class AdvertismentsService {
     constructor(
         @InjectRepository(Advertisments)
         private adsRepo:Repository<Advertisments>,
-        private carsService: CarsService,
-        private citiesService: CitiesService,
-        private usersService: UsersService
+
+        @InjectRepository(Cars)
+        private carsRepo: Repository<Cars>,
+
+        @InjectRepository(Cities)
+        private citiesRepo: Repository<Cities>,
+
+        @InjectRepository(Users)
+        private usersRepo:Repository<Users>
         
     ){}
 
     async findAll(): Promise<Advertisments[]>{
-        return this.adsRepo.find({relations: ['carID', 'cityID', 'creatorID']});
+        return this.adsRepo.find({relations: ['carID', 'carID.engineID', 'carID.modelID', 'carID.modelID.manID','carID.transID', 'carID.carTypeID', 'carID.wheelDriveID', 'cityID', 'creatorID'], 
+        
+    });
     }
     
     findWithID(id: number): Promise<Advertisments>{
         return this.adsRepo.findOne(id);
+    }
+
+    getCities(): Promise<Cities[]>{
+        return this.citiesRepo.find();
     }
 
     async findOne(creatorUsername: string ): Promise<Advertisments[]>{// за търсене на обяви за един човек
@@ -39,6 +56,11 @@ export class AdvertismentsService {
         });
     }   
 
+    async findWithModel(search: SearchModel){
+        var array = await this.findAll();
+        
+    }
+
     async findIDByDesc(descr: string){
         const log: Advertisments = await this.adsRepo.findOne({
                                     where: {
@@ -50,6 +72,8 @@ export class AdvertismentsService {
         return log;
     }
 
+    
+
     checkExists(descr: string){
         return this.adsRepo.count({where: {desc: descr}});
     }
@@ -57,9 +81,10 @@ export class AdvertismentsService {
     async insert(ad: AdvertismentsModel){        
         const row = new Advertisments();
 
-        row.carID = await this.carsService.findOne(ad.car);
-        row.cityID = await this.citiesService.findByName(ad.city);
-        row.creatorID = await this.usersService.findWithUsername(ad.creatorUsername);
+        row.carID = await this.carsRepo.findOne(ad.car);
+        row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
+        row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
+        
         row.creatorPN = ad.creatorPN;
         row.price = ad.price;
         row.desc = ad.desc;

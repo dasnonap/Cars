@@ -22,6 +22,7 @@ import { ModelsModule } from './entities/models/models.module';
 import { UploadsModule } from './upload/uploads/uploads.module';
 import { AccountServiceModule } from './account-service/account-service.module';
 import { CarsModule } from './entities/cars/cars.module';
+import { QueriesModule } from './queries/queries.module';
 
 
 @Module({
@@ -46,6 +47,7 @@ import { CarsModule } from './entities/cars/cars.module';
     }),
     UploadsModule,
     AccountServiceModule,
+    QueriesModule,
     
   ],
   controllers: [AppController],

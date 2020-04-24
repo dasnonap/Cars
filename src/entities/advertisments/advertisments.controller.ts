@@ -37,6 +37,6 @@ export class AdvertismentsController {
         ad.photos = 'F:/ads/ad' + ad.id + '/photos/';
 
         this.adsService.updateAd(ad, files);
-        
+        //todo fix photos dir
     }
 }

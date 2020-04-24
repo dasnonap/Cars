@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cars } from './cars.entity';
 import { Repository } from 'typeorm';
-import { EngineTypeService } from '../engine-type/engine-type.service';
-import { ModelsService } from '../models/models.service';
-import { TransTypeService } from '../trans-type/trans-type.service';
-import { CarTypeService } from '../car-type/car-type.service';
-import { WheeldriveService } from '../wheeldrive/wheeldrive.service';
+
 import { CarsModel } from 'src/DTO/cars.model';
+import { EngineType } from '../engine-type/engine-type.entity';
+import { Models } from '../models/models.entity';
+import { Transmission_Type } from '../trans-type/trans-type.entity';
+import { Type_of_car } from '../car-type/car-type.entity';
+import { Wheeldrive } from '../wheeldrive/wheeldrive.entity';
+import { Manufacturer } from '../manufacturer/manufacturer.entity';
+import { SearchModel } from 'src/DTO/search.model';
 
 
 @Injectable()
@@ -16,11 +19,24 @@ export class CarsService {
    constructor(
         @InjectRepository(Cars)
         private carsRepo: Repository<Cars>,
-        private engineService: EngineTypeService,
-        private modelsService: ModelsService,
-        private transService: TransTypeService,
-        private carTypeService: CarTypeService,
-        private wheelService: WheeldriveService
+
+        @InjectRepository(EngineType)
+        private engineRepo: Repository<EngineType>,
+
+        @InjectRepository(Models)
+        private modelsRepo: Repository<Models>,
+
+        @InjectRepository(Transmission_Type)
+        private transRepo: Repository<Transmission_Type>,
+
+        @InjectRepository(Type_of_car)
+        private carTypeRepo: Repository<Type_of_car>,
+
+        @InjectRepository(Wheeldrive)
+        private wheelRepo: Repository<Wheeldrive>,
+
+        @InjectRepository(Manufacturer)
+        private manRepo: Repository<Manufacturer>
         
     ){}
 
@@ -28,22 +44,58 @@ export class CarsService {
         return this.carsRepo.find({relations: ['engineID', 'modelID', 'transID',  'carTypeID', 'wheelDriveID']});
     }
 
-    async findOne(id: number): Promise<Cars>{
-        return this.carsRepo.findOne(id);
+    async findWithModel(search: SearchModel): Promise<Cars[]>{
+        return this.carsRepo
+                .createQueryBuilder("car")
+                .leftJoinAndSelect("car.engineID", "engine")
+                .leftJoinAndSelect("car.modelID", "model")
+                .leftJoinAndSelect("car.transID", "trans")
+                .leftJoinAndSelect("car.carTypeID", "carType")
+                .leftJoinAndSelect("car.wheelDriveID", "wheel")
+                .where("engine.type = :type", {type: search.engine})
+                .orWhere("model.modelName = :name", {name: search.model})
+                .orWhere("trans.type = :type", {type: search.transmission})
+                .orWhere("carType.name = :name", {name: search.car_type})
+                .orWhere("wheel.type = :type", {type: search.wheelDrive})
+                .getMany();
     }
 
     async insert(car: CarsModel){
         const row = new Cars();
         row.doors = car.doorNumber;
         row.year = car.yearDev;
-        row.engineID = await this.engineService.findWithType(car.engineType);
-        row.modelID = await this.modelsService.findWithName(car.model);
-        row.transID = await this.transService.findOne(car.transType);
-        row.carTypeID = await this.carTypeService.findWithName(car.carType);
-        row.wheelDriveID = await this.wheelService.findWithName(car.wheelDrive);
+        row.engineID = await this.engineRepo.findOne({where: {type: car.engineType}});
+        
+        row.modelID = await this.modelsRepo.findOne({where: {modelName: car.model}});
+        
+        row.transID = await this.transRepo.findOne({where: {type: car.transType}});
+
+        
+        row.carTypeID = await this.carTypeRepo.findOne({where: {name: car.carType}});
+        
+        row.wheelDriveID = await this.wheelRepo.findOne({where: {type: car.wheelDrive}});        
 
         this.carsRepo.insert(row);
 
+    }
+
+    returnEngines(): Promise<EngineType[]>{
+        return this.engineRepo.find();
+    }
+    returnModels(): Promise<Models[]>{
+        return this.modelsRepo.find({relations: ['manID']});
+    }
+    returnTransm(): Promise<Transmission_Type[]>{
+        return this.transRepo.find();
+    }
+    returnCarType(): Promise<Type_of_car[]>{
+        return this.carTypeRepo.find();
+    }
+    returnWheelDrive(): Promise<Wheeldrive[]>{
+        return this.wheelRepo.find();
+    }
+    returnMan(): Promise<Manufacturer[]>{
+        return this.manRepo.find();
     }
 
 }

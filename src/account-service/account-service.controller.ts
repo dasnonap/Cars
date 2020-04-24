@@ -13,18 +13,19 @@ export class AccountServiceController {
         ){};
     
     @UseGuards(JwtAuthGuard)
+
     @Get('profile')
     getProfile(@Req() req){
         return req.user;
     }
     
     @Post('register')
-    async regUser(@Body()usr: UsersModel){
+    async regUser(@Body()usr: UsersModel, @Res() res){
         
         if( await this.usersService.insert(usr) == false){
-            return 'no';
+            return res.status(409).send({error: 'already registered'});
         } 
-        return this.usersService.findOne(usr.email);
+        return res.status(200);
     }
 
     
