@@ -3,7 +3,7 @@ import { AdvertismentsService } from 'src/entities/advertisments/advertisments.s
 import { CarsService } from 'src/entities/cars/cars.service';
 import { SearchModel } from 'src/DTO/search.model';
 import { Advertisments } from 'src/entities/advertisments/advertisments.entity';
-
+import  fs from 'fs-extra';
 @Injectable()
 export class QueriesService {
     constructor(
@@ -15,11 +15,29 @@ export class QueriesService {
         return this.ads.findAll();
     }
 
+    getPhotos(ads: Advertisments[]){
+        ads.forEach(ad => {
+            var photoObj = {
+                name: ad.adID,
+
+            }
+        });
+    }
+    private  getPhotosWithID(dir: string,id: number){
+        var array = new Array(0);
+        fs.readdir(dir, (error, files) => { 
+            let totalFiles = files.length; 
+            for(var i=0; i < files.length; i++){
+                array.push();
+            }
+
+         });
+    }
+
     async searchBy(search: SearchModel){
         var array = await this.ads.findAll();
         
          return this.getWithSearch(search, array);
-        //return this.getPriceSearch(search, this.getYearSeacrh(search, array));
     }
     private getWithSearch(seacrh: SearchModel, array: Advertisments[]){
         return this.getEngine(seacrh, array);

@@ -23,6 +23,7 @@ import { UploadsModule } from './upload/uploads/uploads.module';
 import { AccountServiceModule } from './account-service/account-service.module';
 import { CarsModule } from './entities/cars/cars.module';
 import { QueriesModule } from './queries/queries.module';
+import { ImgModule } from './img/img.module';
 
 
 @Module({
@@ -48,6 +49,7 @@ import { QueriesModule } from './queries/queries.module';
     UploadsModule,
     AccountServiceModule,
     QueriesModule,
+    ImgModule,
     
   ],
   controllers: [AppController],

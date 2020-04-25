@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Advertisments } from './advertisments.entity';
 import { Repository, LessThanOrEqual, MoreThanOrEqual, Like } from 'typeorm';
-import { CarsService } from '../cars/cars.service';
-import { CitiesService } from '../cities/cities.service';
-import { UsersService } from '../users/users.service';
+
 import { AdvertismentsModel } from 'src/DTO/advertisments.model';
 import * as fs from 'fs-extra';
 
@@ -12,7 +10,7 @@ import { Users } from '../users/users.entity';
 import { Cities } from '../cities/cities.entity';
 import { Cars } from '../cars/cars.entity';
 import { SearchModel } from 'src/DTO/search.model';
-import { EngineType } from '../engine-type/engine-type.entity';
+
 
 
 @Injectable()
@@ -105,8 +103,10 @@ export class AdvertismentsService {
 
     updateAd(ad: AdvertismentsModel, files: any[]){
         const row = new Advertisments();
+        let urlAd = ad;
+        urlAd.urls = [];
         let counter = 1;
-
+        
         this.adsRepo
             .createQueryBuilder()
             .update(Advertisments)
@@ -116,9 +116,12 @@ export class AdvertismentsService {
 
         
         files.forEach( file =>{
-            fs.move('./ads/photos/' + file.filename, this.createFilePath(counter, ad.id));
+            var path = this.createFilePath(counter, ad.id);
+            fs.move('./ads/photos/' + file.filename, path);
+            urlAd.urls.push('localhost:3000/img/' + ad.id + '_' + counter);
             counter++;
         });
+        return urlAd;
     }
 
     private createFilePath(counter: number, id: number){
@@ -135,7 +138,7 @@ export class AdvertismentsService {
                 if(err) throw err;
             } );
     
-            fs.mkdir(('F:/ads/ad' + ad) +'/photos', (err)=>{
+            fs.mkdir('F:/ads/ad' + ad +'/photos', (err)=>{
                 if(err) throw err;
             } );
         }

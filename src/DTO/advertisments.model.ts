@@ -7,6 +7,7 @@ export class AdvertismentsModel{
     price: number;
     desc: string;
     photos: string;
+    urls: string[] = new Array(0);
 
     constructor(id: number, car: number, city: string, creator: string, phone: string, price: number, desc: string){
         this.id = id;

@@ -4,6 +4,7 @@ import { AdvertismentsService } from './advertisments.service';
 import { AdvertismentsModel } from 'src/DTO/advertisments.model';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
+
 @Controller('advertisments')
 export class AdvertismentsController {
     constructor(protected readonly adsService: AdvertismentsService){}
@@ -19,6 +20,11 @@ export class AdvertismentsController {
         
         
         return res.sendFile(row.adID + '_' + number + '.jpg', {root: row.photos});
+    }
+    @Get('ad')
+    async findAdWithDesc(@Body()ad: AdvertismentsModel, @Res() res ){
+        const row = await this.adsService.findIDByDesc(ad.desc);
+    
     }
 
     @Post()
@@ -36,7 +42,8 @@ export class AdvertismentsController {
         ad.id = row.adID;
         ad.photos = 'F:/ads/ad' + ad.id + '/photos/';
 
-        this.adsService.updateAd(ad, files);
-        //todo fix photos dir
+       return  this.adsService.updateAd(ad, files);
+
+             
     }
 }
