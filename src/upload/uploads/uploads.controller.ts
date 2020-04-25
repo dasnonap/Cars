@@ -44,17 +44,17 @@ export class UploadsController {
     private createFilePath(counter: number, ad: AdvertismentsModel){
         this.createDir(ad);
 
-        return 'F:/ads/ad' + ad.getID() + '/photos/' +  ad.getID() + '_' + counter + '.jpg';
+        return 'F:/ads/ad' + ad.id + '/photos/' +  ad.id + '_' + counter + '.jpg';
     }
 
     private createDir(ad: AdvertismentsModel){
-        if(!fs.existsSync('F:/ads/ad' + ad.getID() +'/photos',)){
+        if(!fs.existsSync('F:/ads/ad' + ad.id +'/photos',)){
 
-            fs.mkdir('F:/ads/ad' + ad.getID(), (err)=>{
+            fs.mkdir('F:/ads/ad' + ad.id, (err)=>{
                 if(err) throw err;
             } );
     
-            fs.mkdir('F:/ads/ad' + ad.getID() +'/photos', (err)=>{
+            fs.mkdir('F:/ads/ad' + ad.id +'/photos', (err)=>{
                 if(err) throw err;
             } );
         }

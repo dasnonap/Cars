@@ -10,6 +10,7 @@ import { Users } from '../users/users.entity';
 import { Cities } from '../cities/cities.entity';
 import { Cars } from '../cars/cars.entity';
 import { SearchModel } from 'src/DTO/search.model';
+import { CarsModel } from 'src/DTO/cars.model';
 
 
 
@@ -79,7 +80,8 @@ export class AdvertismentsService {
     async insert(ad: AdvertismentsModel){        
         const row = new Advertisments();
 
-        row.carID = await this.carsRepo.findOne(ad.car);
+        row.carID = this.searchCar(ad.car)[0];
+
         row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
         row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
         
@@ -144,6 +146,45 @@ export class AdvertismentsService {
         }
     }
 
-
+    private async searchCar(car: CarsModel){
+        const array = await this.carsRepo.find({relations: ['engineID', 'modelID', 'transID',  'carTypeID', 'wheelDriveID']});
+        
+        return this.searchEngine(car, array);
+    }
+    private searchEngine(car: CarsModel, array: Cars[]){
+        return this.searchModel(car, array.filter(function(value, index, arr){
+            return value.engineID.type == car.engineType;
+        }));
+    }
+    private searchModel(car: CarsModel, array: Cars[]){
+        return this.searchTrans(car, array.filter(function(value, index, arr){
+            return value.modelID.modelName == car.model;
+        }));
+    }
+    private searchTrans(car: CarsModel, array: Cars[]){
+        return this.searchCarType(car, array.filter(function(value, index, arr){
+            return value.transID.type == car.transType;
+        }));
+    }
+    private searchCarType(car: CarsModel, array: Cars[]){
+        return this.searchWheel(car, array.filter(function(value, index, arr){
+            return value.carTypeID.name == car.carType;
+        }));
+    }
+    private searchWheel(car: CarsModel, array: Cars[]){
+        return this.searchDoors(car, array.filter(function(value, index, arr){
+            return value.wheelDriveID.type == car.wheelDrive;
+        }));
+    }
+    private searchDoors(car: CarsModel, array: Cars[]){
+        return this.searchYear(car, array.filter(function(value, index, arr){
+            return value.doors == car.doorNumber;
+        }));
+    }
+    private searchYear(car: CarsModel, array: Cars[]){
+        return array.filter(function(value, index, arr){
+            return value.year == car.yearDev;
+        });
+    }
 
 }

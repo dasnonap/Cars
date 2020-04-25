@@ -29,7 +29,7 @@ export class AdvertismentsController {
 
     @Post()
     async insert(@Body()ad: AdvertismentsModel){
-        this.adsService.insert(ad);
+        return this.adsService.insert(ad);
     }
 
     @Post('upload')

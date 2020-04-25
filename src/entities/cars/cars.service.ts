@@ -44,21 +44,17 @@ export class CarsService {
         return this.carsRepo.find({relations: ['engineID', 'modelID', 'transID',  'carTypeID', 'wheelDriveID']});
     }
 
-    async findWithModel(search: SearchModel): Promise<Cars[]>{
+    async findWithModel(search: SearchModel){
         return this.carsRepo
-                .createQueryBuilder("car")
-                .leftJoinAndSelect("car.engineID", "engine")
-                .leftJoinAndSelect("car.modelID", "model")
-                .leftJoinAndSelect("car.transID", "trans")
-                .leftJoinAndSelect("car.carTypeID", "carType")
-                .leftJoinAndSelect("car.wheelDriveID", "wheel")
-                .where("engine.type = :type", {type: search.engine})
-                .orWhere("model.modelName = :name", {name: search.model})
-                .orWhere("trans.type = :type", {type: search.transmission})
-                .orWhere("carType.name = :name", {name: search.car_type})
-                .orWhere("wheel.type = :type", {type: search.wheelDrive})
+                .createQueryBuilder("cars")
+                .leftJoinAndSelect(EngineType, "e", 'e.id = cars.engineID')
+                .leftJoinAndSelect(Models, "model", 'model.id = cars.modelID')
+                .leftJoinAndSelect(Transmission_Type, "trans", 'trans.id = cars.transID')
+                .leftJoinAndSelect(Type_of_car, "carType", 'carType.id = cars.carTypeID')
+                .leftJoinAndSelect(Wheeldrive, "wheel", 'wheel.id = cars.wheelDriveID')
                 .getMany();
     }
+ 
 
     async insert(car: CarsModel){
         const row = new Cars();
