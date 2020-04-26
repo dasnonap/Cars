@@ -25,7 +25,7 @@ export class AccountServiceController {
         if( await this.usersService.insert(usr) == false){
             return res.status(409).send({error: 'already registered'});
         } 
-        return res.status(200);
+        return res.status(200).send();
     }
 
     
