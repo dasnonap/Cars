@@ -7,6 +7,7 @@ export class CarsModel{
     wheelDrive: string;
     doorNumber: number;
     yearDev: number;
+    man: string;
 
     constructor(id: number, engine: string, model: string, trans: string, car: string,  drive: string, doors: number, year: number){
         this.carID = id;

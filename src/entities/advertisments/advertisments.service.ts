@@ -11,6 +11,12 @@ import { Cities } from '../cities/cities.entity';
 import { Cars } from '../cars/cars.entity';
 import { SearchModel } from 'src/DTO/search.model';
 import { CarsModel } from 'src/DTO/cars.model';
+import { EngineType } from '../engine-type/engine-type.entity';
+import { Models } from '../models/models.entity';
+import { Transmission_Type } from '../trans-type/trans-type.entity';
+import { Type_of_car } from '../car-type/car-type.entity';
+import { Wheeldrive } from '../wheeldrive/wheeldrive.entity';
+import { Manufacturer } from '../manufacturer/manufacturer.entity';
 
 
 
@@ -27,7 +33,25 @@ export class AdvertismentsService {
         private citiesRepo: Repository<Cities>,
 
         @InjectRepository(Users)
-        private usersRepo:Repository<Users>
+        private usersRepo:Repository<Users>,
+
+        @InjectRepository(EngineType)
+        private engineRepo: Repository<EngineType>,
+
+        @InjectRepository(Models)
+        private modelsRepo: Repository<Models>,
+
+        @InjectRepository(Transmission_Type)
+        private transRepo: Repository<Transmission_Type>,
+
+        @InjectRepository(Type_of_car)
+        private carTypeRepo: Repository<Type_of_car>,
+
+        @InjectRepository(Wheeldrive)
+        private wheelRepo: Repository<Wheeldrive>,
+
+        @InjectRepository(Manufacturer)
+        private manRepo: Repository<Manufacturer>
         
     ){}
 
@@ -79,9 +103,18 @@ export class AdvertismentsService {
 
     async insert(ad: AdvertismentsModel){        
         const row = new Advertisments();
-
-        row.carID = await this.searchCar(ad.car);
-
+        var newID: number;
+        
+        const carID =  await this.searchCar(ad.car);
+        if(carID == null){
+            const newCar = await this.createCar(ad.car);
+            const car = await this.carsRepo.insert(newCar).then(()=>{
+            return this.carsRepo.getId(newCar);
+            });
+            newID = car;
+        }
+        
+        row.carID = await this.carsRepo.findOne(newID);
         row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
         row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
         
@@ -93,6 +126,7 @@ export class AdvertismentsService {
         this.adsRepo.insert(row);
 
     }
+
 
     insertPhotos(files: any[], id: number){
         let counter = 1;
@@ -185,6 +219,46 @@ export class AdvertismentsService {
         return array.filter(function(value, index, arr){
             return value.year == car.yearDev;
         });
+    }
+
+    private async createCar(car: CarsModel){
+        const row = new Cars();
+        row.doors = car.doorNumber;
+        row.year = car.yearDev;
+
+        row.engineID = await this.engineRepo.findOne({where: {type: car.engineType}});
+        if(await this.manRepo.count({where: {name: car.man}}) == 0){
+            const manu = new Manufacturer();
+
+            manu.name = car.man;
+            this.manRepo.insert(manu);
+        }
+        
+        if(await this.modelsRepo.count({where: {modelName: car.model}}) == 0){
+            const model = new Models();
+            
+            const manID = await this.manRepo.findOne({where: {name: car.man}});
+            model.manID = manID;
+            model.modelName = car.model;
+            
+            const mod = await this.modelsRepo.insert(model).then(()=>{
+                return this.modelsRepo.getId(model);
+            });
+            var modID: number = mod;
+            row.modelID =  await this.modelsRepo.findOne({where: {id: modID}});
+            
+        }
+        row.modelID = await this.modelsRepo.findOne({where: {modelName: car.model}});
+        
+        row.transID = await this.transRepo.findOne({where: {type: car.transType}});
+
+        
+        row.carTypeID = await this.carTypeRepo.findOne({where: {name: car.carType}});
+        
+        row.wheelDriveID = await this.wheelRepo.findOne({where: {type: car.wheelDrive}});  
+        
+        return row;
+
     }
 
 }
