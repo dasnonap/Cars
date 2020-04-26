@@ -80,7 +80,7 @@ export class AdvertismentsService {
     async insert(ad: AdvertismentsModel){        
         const row = new Advertisments();
 
-        row.carID = this.searchCar(ad.car)[0];
+        row.carID = await this.searchCar(ad.car);
 
         row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
         row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
@@ -149,7 +149,7 @@ export class AdvertismentsService {
     private async searchCar(car: CarsModel){
         const array = await this.carsRepo.find({relations: ['engineID', 'modelID', 'transID',  'carTypeID', 'wheelDriveID']});
         
-        return this.searchEngine(car, array);
+        return this.searchEngine(car, array)[0];
     }
     private searchEngine(car: CarsModel, array: Cars[]){
         return this.searchModel(car, array.filter(function(value, index, arr){

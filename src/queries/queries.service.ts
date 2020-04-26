@@ -37,13 +37,14 @@ export class QueriesService {
     async searchBy(search: SearchModel){
         var array = await this.ads.findAll();
         
-         return this.getWithSearch(search, array);
+        return this.getWithSearch(search, array);
     }
     private getWithSearch(seacrh: SearchModel, array: Advertisments[]){
+        
         return this.getEngine(seacrh, array);
     }
     private getEngine(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.engine != ""){
+        if(seacrh.engine != "null"){
             return this.getTrans(seacrh,  array.filter(function(value, index, arr){
                 return value.carID.engineID.type == seacrh.engine;
             }));
@@ -51,7 +52,7 @@ export class QueriesService {
         return this.getTrans(seacrh, array);
     }
     private getTrans(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.transmission != ""){
+        if(seacrh.transmission != "null"){
             return this.getModel(seacrh, array.filter(function(value, index, arr){
                 return value.carID.transID.type == seacrh.transmission;
             }))
@@ -59,7 +60,7 @@ export class QueriesService {
         return this.getModel(seacrh, array);
     }
     private getModel(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.model != ""){
+        if(seacrh.model != "null"){
             return this.getManSearch( seacrh, array.filter(function(value, index, arr){
                 return value.carID.modelID.modelName == seacrh.model;
             }))
@@ -67,7 +68,7 @@ export class QueriesService {
         return this.getManSearch(seacrh, array);
     }
     private getManSearch(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.manufacturer != ""){
+        if(seacrh.manufacturer != "null"){
             return this.getCar(seacrh, array.filter(function(value, index, arr){
                 return (value.carID.modelID.manID.name == seacrh.manufacturer);
             }))
@@ -75,7 +76,7 @@ export class QueriesService {
         return this.getCar(seacrh, array);
     }
     private getCar(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.car_type != ""){
+        if(seacrh.car_type != "null"){
             return this.getWheelSearch(seacrh, array.filter(function(value, index, arr){
                 return (value.carID.carTypeID.name == seacrh.car_type);
             }))
@@ -83,7 +84,7 @@ export class QueriesService {
         return this.getWheelSearch(seacrh, array);
     }
     private getWheelSearch(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.wheelDrive != ""){
+        if(seacrh.wheelDrive != "null"){
             return this.getDoors(seacrh, array.filter(function(value, index, arr){
                 return (value.carID.wheelDriveID.type == seacrh.wheelDrive);
             }))
@@ -99,7 +100,7 @@ export class QueriesService {
         return this.getCity(seacrh, array);
     }
     private getCity(seacrh: SearchModel, array: Advertisments[]){
-        if(seacrh.city != ""){
+        if(seacrh.city != "null"){
             return this.getYearSeacrh(seacrh, array.filter(function(value, index, arr){
                 return (value.cityID.cityName == seacrh.city);
             }))

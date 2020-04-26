@@ -54,6 +54,23 @@ export class CarsService {
                 .leftJoinAndSelect(Wheeldrive, "wheel", 'wheel.id = cars.wheelDriveID')
                 .getMany();
     }
+       /* 
+    .innerJoinAndSelect("cars.modelID", "model")
+                .innerJoinAndSelect("cars.transID", "trans")
+                .innerJoinAndSelect("cars.carTypeID", "carType")
+                .innerJoinAndSelect("cars.wheelDriveID", "wheel")
+                .where("engine.type = :type", {type: search.engine})
+                .orWhere("model.modelName = :name", {name: search.model})
+                .orWhere("trans.type = :type", {type: search.transmission})
+                .orWhere("carType.name = :name", {name: search.car_type})
+                .orWhere("wheel.type = :type", {type: search.wheelDrive})
+                .getMany();
+                where("engine.type = :type", {type: search.engine})
+                .orWhere("model.modelName = :name", {name: search.model})
+                .orWhere("trans.type = :type", {type: search.transmission})
+                .orWhere("carType.name = :name", {name: search.car_type})
+                .orWhere("wheel.type = :type", {type: search.wheelDrive})
+    */
  
 
     async insert(car: CarsModel){
