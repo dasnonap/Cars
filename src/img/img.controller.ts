@@ -10,7 +10,7 @@ export class ImgController {
         const dir = 'F:/ads/ad' + id[0] +'/photos';
 
         if( !fs.existsSync(dir) ){
-            return res.status(404);
+            return res.status(404).send();
         }
         else{
            res.sendFile( ad + '.jpg', { root: dir});
