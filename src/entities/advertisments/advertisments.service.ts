@@ -161,6 +161,7 @@ export class AdvertismentsService {
             urlAd.urls.push('localhost:3000/img/' + ad.id + '_' + counter);
             counter++;
         });
+        this.isCreated = false;
         return urlAd;
     }
 
@@ -170,18 +171,21 @@ export class AdvertismentsService {
 
         return 'F:/ads/ad' + id + '/photos/' +  id + '_' + counter + '.jpg';
     }
-
+    private isCreated: boolean = false;
     private createDir(ad: number){
-        if(!fs.existsSync('F:/ads/ad' + ad +'/photos',)){
-
-            fs.mkdir('F:/ads/ad' + ad, (err)=>{
-                if(err) throw err;
-            } );
-    
-            fs.mkdir('F:/ads/ad' + ad +'/photos', (err)=>{
-                if(err) throw err;
-            } );
+        if(this.isCreated == true){
+            if(!fs.existsSync('F:/ads/ad' + ad +'/photos',)){
+                this.isCreated = true;
+                fs.mkdir('F:/ads/ad' + ad, (err)=>{
+                    if(err) throw err;
+                } );
+        
+                fs.mkdir('F:/ads/ad' + ad +'/photos', (err)=>{
+                    if(err) throw err;
+                } );
+            }
         }
+        
     }
 
     private async searchCar(car: CarsModel){
