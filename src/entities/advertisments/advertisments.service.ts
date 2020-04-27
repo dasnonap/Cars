@@ -112,9 +112,10 @@ export class AdvertismentsService {
             return this.carsRepo.getId(newCar);
             });
             newID = car;
+            row.carID = await this.carsRepo.findOne(newID);
         }
         
-        row.carID = await this.carsRepo.findOne(newID);
+        row.carID = carID;
         row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
         row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
         
