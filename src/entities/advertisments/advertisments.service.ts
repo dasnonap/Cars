@@ -22,6 +22,7 @@ import { Manufacturer } from '../manufacturer/manufacturer.entity';
 
 @Injectable()
 export class AdvertismentsService {
+    private lastInsertedADID: number = 0;
     constructor(
         @InjectRepository(Advertisments)
         private adsRepo:Repository<Advertisments>,
@@ -124,7 +125,9 @@ export class AdvertismentsService {
         row.desc = ad.desc;
         row.photos = "new";
 
-        this.adsRepo.insert(row);
+        return this.adsRepo.insert(row).then(()=>{
+            return this.adsRepo.getId(row);
+        });
 
     }
 

@@ -37,9 +37,7 @@ export class AdvertismentsController {
         FilesInterceptor('image', 20)
     )
     async findWithDesc(@Body()ad: AdvertismentsModel, @UploadedFiles() files){
-        const row = await this.adsService.findIDByDesc(ad.desc);
        
-        ad.id = row.adID;
         ad.photos = 'F:/ads/ad' + ad.id + '/photos/';
 
        return  this.adsService.updateAd(ad, files);
