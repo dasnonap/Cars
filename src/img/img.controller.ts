@@ -13,7 +13,7 @@ export class ImgController {
             return res.status(404).send();
         }
         else{
-           res.sendFile( ad + '.jpg', { root: dir});
+           res.sendFile( ad , { root: dir});
         }    
     }
 }
