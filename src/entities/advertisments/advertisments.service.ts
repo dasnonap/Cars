@@ -125,10 +125,11 @@ export class AdvertismentsService {
         row.desc = ad.desc;
         row.photos = "new";
 
-        return this.adsRepo.insert(row).then(()=>{
+        var id = await this.adsRepo.insert(row).then(()=>{
             return this.adsRepo.getId(row);
         });
-
+        ad.id = id;
+        return ad;
     }
 
 
