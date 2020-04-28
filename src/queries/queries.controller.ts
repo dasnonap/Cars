@@ -10,14 +10,15 @@ export class QueriesController {
     constructor(private queriesService: QueriesService){}
 
     @Get('ads')
-    getAds(){
-        return this.queriesService.getAds();
+    async getAds(){
+        return await this.queriesService.getAds(false);
+        
     }
 
     @Get('all')
     async getAllData(){
         var cities = await this.queriesService.getCities();
-        var ads= await this.queriesService.getAds();
+        var ads= await this.queriesService.getAds(false);
         var wheelDrives = await this.queriesService.getWheel();
         var engines = await this.queriesService.getEngines();
         var transmissions = await this.queriesService.getTransm();

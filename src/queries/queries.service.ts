@@ -4,6 +4,9 @@ import { CarsService } from 'src/entities/cars/cars.service';
 import { SearchModel } from 'src/DTO/search.model';
 import { Advertisments } from 'src/entities/advertisments/advertisments.entity';
 import  fs from 'fs-extra';
+import { AdvertismentsModel } from 'src/DTO/advertisments.model';
+import { Cars } from 'src/entities/cars/cars.entity';
+import { CarsModel } from 'src/DTO/cars.model';
 @Injectable()
 export class QueriesService {
     constructor(
@@ -11,8 +14,18 @@ export class QueriesService {
         private cars: CarsService 
         ){}
 
-    getAds(){
-        return this.ads.findAll();
+    async getAds(choice: boolean){
+        const ads = await this.ads.findAll();
+
+        if(choice == true){
+            var adsModels: AdvertismentsModel[] = new Array(0);
+
+            ads.forEach(ad=>{
+                adsModels.push(this.fromEntityToModel(ad));
+            });
+            return adsModels;
+        }
+        return ads;
     }
 
     getPhotos(ads: Advertisments[]){
@@ -22,6 +35,38 @@ export class QueriesService {
 
             }
         });
+    }
+    private fromEntityToModel(ad: Advertisments){
+        var adModel: AdvertismentsModel;
+        
+        adModel.id = ad.adID;
+        adModel.car = this.fromCarsToModel(ad.carID);
+        adModel.city = ad.cityID.cityName;
+        adModel.creatorPN = ad.creatorPN;
+        adModel.creatorUsername = ad.creatorID.username;
+        adModel.desc = ad.desc;
+        adModel.price = ad.price;
+        
+        const files = fs.readdirSync(ad.photos);
+
+            files.forEach(file => {
+                adModel.urls.push('localhost:3000/img/' + file)
+            });
+
+        return adModel;
+    }
+    private fromCarsToModel(car: Cars){
+        var carModel: CarsModel;
+        carModel.carID = car.id;
+        carModel.doorNumber = car.doors;
+        carModel.engineType = car.engineID.type;
+        carModel.man = car.modelID.manID.name;
+        carModel.yearDev = car.year;
+        carModel.transType = car.transID.type;
+        carModel.wheelDrive = car.wheelDriveID.type;
+        carModel.model = car.modelID.modelName;
+        carModel.carType = car.carTypeID.name;
+        return carModel;
     }
     private  getPhotosWithID(dir: string,id: number){
         var array = new Array(0);

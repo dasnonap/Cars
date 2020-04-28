@@ -2,7 +2,7 @@ import { CarsModel } from "./cars.model";
 
 export class AdvertismentsModel{
     id: number;
-    car: CarsModel;
+    car: CarsModel ;
     city: string;
     creatorUsername: string;
     creatorPN: string;

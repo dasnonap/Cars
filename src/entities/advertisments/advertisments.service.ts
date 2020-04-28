@@ -162,7 +162,7 @@ export class AdvertismentsService {
         files.forEach( file =>{
             var path = this.createFilePath(counter, ad.id);
             fs.move('./ads/photos/' + file.filename, path);
-            urlAd.urls.push('localhost:3000/img/' + ad.id + '_' + counter);
+            urlAd.urls.push('localhost:3000/img/' + ad.id + '_' + counter + '.jpg');
             counter++;
         });
         this.isCreated = false;
