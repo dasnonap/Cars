@@ -40,7 +40,7 @@ export class QueriesService {
         return this.getWithSearch(search, array);
     }
     private getWithSearch(seacrh: SearchModel, array: Advertisments[]){
-        
+
         return this.getEngine(seacrh, array);
     }
     private getEngine(seacrh: SearchModel, array: Advertisments[]){

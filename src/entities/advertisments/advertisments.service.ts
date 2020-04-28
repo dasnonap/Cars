@@ -105,18 +105,21 @@ export class AdvertismentsService {
     async insert(ad: AdvertismentsModel){        
         const row = new Advertisments();
         var newID: number;
-        
-        const carID =  await this.searchCar(ad.car);
+        const carID = await this.searchCar(ad.car);
         if(carID == null){
+            
             const newCar = await this.createCar(ad.car);
             const car = await this.carsRepo.insert(newCar).then(()=>{
             return this.carsRepo.getId(newCar);
             });
+            
             newID = car;
             row.carID = await this.carsRepo.findOne(newID);
         }
+        else{
+            row.carID = carID;
+        }
         
-        row.carID = carID;
         row.cityID = await this.citiesRepo.findOne({where: {cityName: ad.city}});
         row.creatorID = await this.usersRepo.findOne({where: {username: ad.creatorUsername}});
         
@@ -195,6 +198,7 @@ export class AdvertismentsService {
         return this.searchEngine(car, array)[0];
     }
     private searchEngine(car: CarsModel, array: Cars[]){
+        
         return this.searchModel(car, array.filter(function(value, index, arr){
             return value.engineID.type == car.engineType;
         }));
